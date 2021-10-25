@@ -68,7 +68,7 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
 
     @TargetApi(Build.VERSION_CODES.P)
     @ReactMethod
-    public void getSubscriptionInfo(Promise promise){
+    public void getActiveSubscriptionInfo(Promise promise){
         try{
             SubscriptionManager subscriptionManager = (SubscriptionManager) reactContext.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE);
             List<SubscriptionInfo> subscriptionInfoList = subscriptionManager.getAccessibleSubscriptionInfoList();
