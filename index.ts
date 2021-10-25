@@ -8,11 +8,18 @@ type SubscriptionInfo = {
     carrierName: string;
 }
 
-export const getActiveSubscriptionInfo = (): Promise<SubscriptionInfo> => {
+const getActiveSubscriptionInfo = (): Promise<SubscriptionInfo> => {
     return ReactNativeSendSms.getActiveSubscriptionInfo();
 }
 
-export const sendSMS = (toAddress: Array<string> ,messageText: string, subscriptionId?: number): Promise<void> => {
+const sendSMS = (toAddress: Array<string> ,messageText: string, subscriptionId?: number): Promise<void> => {
     return !subscriptionId ? ReactNativeSendSms.sendSMSDefault(toAddress, messageText) :ReactNativeSendSms.sendSMS(toAddress, subscriptionId, messageText) ;
 }
+
+export default {
+  getActiveSubscriptionInfo,
+  sendSMS,
+}
+
+
 
