@@ -4,12 +4,14 @@ const { ReactNativeSendSms } = NativeModules;
 
 const AndroidPermisisons = {
   READ_PHONE_STATE: "android.permission.READ_PHONE_STATE",
+  SEND_SMS: "android.permission.SEND_SMS",
 };
 
 type SubscriptionInfo = {
   subscriptionId: number;
   phoneNumber: string;
   carrierName: string;
+  simSlotIndex: number;
 };
 
 const getActiveSubscriptionInfo = (): Promise<Array<SubscriptionInfo>> => {
@@ -19,7 +21,7 @@ const getActiveSubscriptionInfo = (): Promise<Array<SubscriptionInfo>> => {
         AndroidPermisisons.READ_PHONE_STATE as Permission,
         {
           title: "Need to read phone state",
-          message: "Need to read phone state to get sim info",
+          message: "Need to read phone state to utilize dual sim",
           buttonPositive: "Grant",
         }
       );
@@ -44,10 +46,10 @@ const sendSMS = (
   return new Promise<void>(async (resolve, reject) => {
     try {
       const permissionStatus = await PermissionsAndroid.request(
-        AndroidPermisisons.READ_PHONE_STATE as Permission,
+        AndroidPermisisons.SEND_SMS as Permission,
         {
           title: "Need Send SMS permission",
-          message: "Need Send SMS permission for sending SMS on behalf of user",
+          message: "Need Send SMS permission for sending the SMS",
           buttonPositive: "Grant",
         }
       );

@@ -1,8 +1,8 @@
 {
   "name": "@cleartax/react-native-send-sms",
   "title": "React Native Send Sms",
-  "version": "1.0.1",
-  "description": "TODO",
+  "version": "1.0.4",
+  "description": "Automating send sms for react native",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
