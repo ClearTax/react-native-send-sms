@@ -1,30 +1,23 @@
 {
-  "name": "react-native-send-sms",
+  "name": "@cleartax/react-native-send-sms",
   "title": "React Native Send Sms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TODO",
-  "main": "index.js",
-  "files": [
-    "README.md",
-    "android",
-    "index.js",
-    "ios",
-    "react-native-send-sms.podspec"
-  ],
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sarsony1/react-native-send-sms.git",
-    "baseUrl": "https://github.com/sarsony1/react-native-send-sms"
+    "url": "git+https://github.com/Cleartax/react-native-send-sms.git",
+    "baseUrl": "https://github.com/Cleartax/react-native-send-sms"
   },
   "keywords": [
     "react-native"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "ClearPro",
+    "email": "nexus-team@cleartax.in"
   },
   "license": "MIT",
   "licenseFilename": "LICENSE",
