@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
@@ -31,6 +32,8 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
     private final ReactApplicationContext reactContext;
 
     private static String LOG_TAG = "CLEAR_PRO_ANDROID_DEBUG";
+    private Promise sendSmsPromise = null;
+    private SentSMSObserver smsContentObserver = null;
 
     public ReactNativeSendSmsModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -42,7 +45,30 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
         return "ReactNativeSendSms";
     }
 
-    private void sendSMSUtil(SmsManager smsManager, ReadableArray toAddresses, String textMessage, Promise promise) {
+    public void sendCallback(Boolean isErrorState, String errorMsg){
+        if(this.sendSmsPromise != null){
+            if(isErrorState){
+                this.sendSmsPromise.reject(errorMsg);
+            }else{
+                this.sendSmsPromise.resolve("SMS Sent successfully");
+            }
+        }
+    }
+
+    private void sendSingleSMSUtil(SmsManager smsManager, String toAddress, String textMessage, Promise promise) {
+        try {
+            PendingIntent sentIntent = PendingIntent.getBroadcast(getReactApplicationContext(), 0, new Intent("SENDING_SMS"), 0);
+            this.smsContentObserver = new SentSMSObserver(reactContext, this, Collections.singletonMap("phone_number", toAddress));
+            this.smsContentObserver.start();
+            this.sendSmsPromise = promise;
+            smsManager.sendTextMessage(toAddress, null, textMessage, sentIntent, null);
+        } catch (RuntimeException error) {
+            promise.reject(error.getMessage());
+            return;
+        }
+    }
+
+    private void sendSMSUtil(SmsManager smsManager, ReadableArray toAddresses, String textMessage,Boolean withSentFeedback, Promise promise) {
         if (toAddresses.size() == 0) {
             promise.resolve(null);
             return;
@@ -62,14 +88,25 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void sendSMSDefault(ReadableArray toAddresses, String messageText, Promise promise) {
-        sendSMSUtil(SmsManager.getDefault(), toAddresses, messageText, promise);
+    public void sendBulkSMSDefault(ReadableArray toAddresses, String messageText, Boolean withSentFeedback,Promise promise) {
+        sendSMSUtil(SmsManager.getDefault(), toAddresses, messageText,withSentFeedback, promise);
+    }
+
+    @ReactMethod
+    public void sendSingleSMSDefault(String toAddress, String messageText, Promise promise) {
+        sendSingleSMSUtil(SmsManager.getDefault(), toAddress, messageText, promise);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     @ReactMethod
-    public void sendSMS(ReadableArray toAddress, int subscriptionId, String messageText, Promise promise) {
-        sendSMSUtil(SmsManager.getSmsManagerForSubscriptionId(subscriptionId), toAddress, messageText, promise);
+    public void sendBulkSMS(ReadableArray toAddresses, int subscriptionId, String messageText, Boolean withSentFeedback, Promise promise) {
+        sendSMSUtil(SmsManager.getSmsManagerForSubscriptionId(subscriptionId), toAddresses, messageText, withSentFeedback, promise);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    @ReactMethod
+    public void sendSingleSMS(String toAddress, int subscriptionId, String messageText,  Promise promise) {
+        sendSingleSMSUtil(SmsManager.getSmsManagerForSubscriptionId(subscriptionId), toAddress, messageText,  promise);
     }
 
     @TargetApi(Build.VERSION_CODES.P)
