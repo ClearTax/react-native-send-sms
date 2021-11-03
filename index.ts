@@ -63,6 +63,7 @@ const sendSMS = (
         } else {
           await ReactNativeSendSms.sendSMSDefault(toAddress, messageText);
         }
+        resolve();
       } else {
         reject("Permission not granted");
       }
