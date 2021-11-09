@@ -8,9 +8,6 @@ import android.net.Uri;
 import android.database.Cursor;
 import android.os.Looper;
 
-import com.facebook.react.bridge.ReadableMap;
-
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +84,7 @@ public class SentSMSObserver extends ContentObserver {
     private void messageSuccess() {
         module.sendCallback(false, "");
         stop();
+        sentSMSStatusWaitTimer.cancel();
     }
 
     private void messageError(String errMsg) {
@@ -104,13 +102,11 @@ public class SentSMSObserver extends ContentObserver {
             cursor = resolver.query(uri, PROJECTION, null, null, null);
 
             if (cursor != null && cursor.moveToFirst()) {
-                if(cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS) ) == this.recipientAddress) {
-                    //loop through provided success types
+                if(cursor.getString(cursor.getColumnIndex(COLUMN_ADDRESS)).equals(this.recipientAddress)) {
                     boolean wasSuccess = false;
-
                     final int type = cursor.getInt(cursor.getColumnIndex(COLUMN_TYPE));
-                    System.out.println("onChange() type: " + type);
 
+                    //loop through provided success types
                     for (int i = 0; i < successTypes.size(); i++) {
                         if (type == types.get(successTypes.get(i))) {
                             wasSuccess = true;
@@ -119,8 +115,6 @@ public class SentSMSObserver extends ContentObserver {
                     }
                     if (wasSuccess) {
                         messageSuccess();
-                    } else {
-                        messageError("Failed info from content observer");
                     }
                 }
             }

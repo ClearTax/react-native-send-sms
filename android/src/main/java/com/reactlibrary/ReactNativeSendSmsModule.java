@@ -1,5 +1,3 @@
-// ReactNativeSendSmsModule.java
-
 package com.reactlibrary;
 
 import android.Manifest;
@@ -48,7 +46,7 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
     public void sendCallback(Boolean isErrorState, String errorMsg){
         if(this.sendSmsPromise != null){
             if(isErrorState){
-                this.sendSmsPromise.reject(errorMsg);
+                this.sendSmsPromise.reject(errorMsg, new Exception(errorMsg));
             }else{
                 this.sendSmsPromise.resolve("SMS Sent successfully");
             }
@@ -63,7 +61,7 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
             this.sendSmsPromise = promise;
             smsManager.sendTextMessage(toAddress, null, textMessage, sentIntent, null);
         } catch (RuntimeException error) {
-            promise.reject(error.getMessage());
+            promise.reject(error.getMessage(), error);
             return;
         }
     }
@@ -81,7 +79,7 @@ public class ReactNativeSendSmsModule extends ReactContextBaseJavaModule {
             }
             promise.resolve("SMS Sent successfully");
         } catch (RuntimeException error) {
-            promise.reject(error.getMessage());
+            promise.reject(error.getMessage(), error);
             return;
         }
     }
